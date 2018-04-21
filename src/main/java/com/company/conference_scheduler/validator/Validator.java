@@ -1,8 +1,10 @@
 package com.company.conference_scheduler.validator;
 
-import com.company.conference_scheduler.model.ErrorList;
+import java.util.List;
+
+import com.company.conference_scheduler.model.Error;
 
 public interface Validator<T> {
 
-	ErrorList validate(T t);
+	List<Error> validate(T t);
 }
