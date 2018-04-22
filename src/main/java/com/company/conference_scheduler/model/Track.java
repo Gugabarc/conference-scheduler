@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Track {
+	private String name;
 	private List<Slot> slots;
 	
 	public Track() {
@@ -20,7 +21,7 @@ public class Track {
 	}
 
 	public String toString() {
-		String print = "Track\n";
+		String print = name + "\n";
 		for (Slot slot : slots) {
 			print = print + slot + "\n";
 		}

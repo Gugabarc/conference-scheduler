@@ -16,6 +16,7 @@ public class Slot {
 	private LocalTime startTime;
 	private String name;
 	private boolean hasEvents;
+	private boolean isLast = false;
 	
 	public Slot() {
 		events = new ArrayList<>();
@@ -36,7 +37,7 @@ public class Slot {
 	
 	@Override
 	public String toString() {
-		String print = name + "\n";
+		String print = startTime + " - " + name + "\n";
 		
 		for (Event event : events) {
 			print = print + event + "\n";
