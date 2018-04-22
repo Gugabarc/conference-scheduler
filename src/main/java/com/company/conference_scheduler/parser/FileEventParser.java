@@ -1,11 +1,5 @@
 package com.company.conference_scheduler.parser;
 
-import static com.company.conference_scheduler.parser.ConfigValues.LIGHTNING_DURATION_IN_MINUTES_STRING;
-import static com.company.conference_scheduler.parser.ConfigValues.LIGHTNING_STRING;
-import static com.company.conference_scheduler.parser.ConfigValues.LINE_PATTERN;
-import static com.company.conference_scheduler.parser.ConfigValues.TRACK_DURATION_GROUP_INDEX;
-import static com.company.conference_scheduler.parser.ConfigValues.TRACK_NAME_GROUP_INDEX;
-import static com.company.conference_scheduler.parser.ConfigValues.ZERO_MINUTE_STRING;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -14,6 +8,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,66 +16,73 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.company.conference_scheduler.config.PropertyValue;
 import com.company.conference_scheduler.model.Error;
-import com.company.conference_scheduler.model.Track;
-import com.company.conference_scheduler.validator.TrackValidator;
+import com.company.conference_scheduler.model.Event;
+import com.company.conference_scheduler.validator.EventValidator;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component("fileTrackParser")
-public class FileTrackParser implements TrackParser {
+@Component("fileEventParser")
+public class FileEventParser implements EventParser {
 	
 	@Value("${default.file.full.path}")
 	private String filename;
 	
 	@Autowired
-	private TrackValidator trackValidator;
+	private EventValidator eventValidator;
+	
+	@Autowired
+	private PropertyValue properties;
 	
 	@Override
-	public List<Track> getTracks() {
+	public List<Event> getEvents() {
 		List<String> fileLines = readInput(filename);
-		List<Track> tracks = new ArrayList<>();
+		List<Event> events = new ArrayList<>();
 		for (String line : fileLines) {
-			Track track = parseLine(line);
-			List<Error> errors = trackValidator.validate(track);
+			Event event = parseLine(line);
+			List<Error> errors = eventValidator.validate(event);
 			
 			if(CollectionUtils.isNotEmpty(errors)) {
 				throw new RuntimeException();
 			}
+			
+			events.add(event);
 		}
 		
-		return tracks;
+		return events;
 	}
 	
-    private Track parseLine(String line) {
+    private Event parseLine(String line) {
         if (isBlank(line)) {
             return null;
         }
 
-        Matcher match = LINE_PATTERN.matcher(line);
+        Pattern p = Pattern.compile("^(.+)\\s(\\d+)?((min)|(lightning))$");
+        Matcher match = p.matcher(line);
         if (match.find() == false) {
             log.warn("Invalid input line: " + line);
             return null;
         }
 
-        String name = match.group(TRACK_NAME_GROUP_INDEX);
-        String durationInString = match.group(TRACK_DURATION_GROUP_INDEX);
+        String name = match.group(properties.getEventNameGroupIndex());
+        String durationInString = match.group(properties.getEventDurationGroupIndex());
+        int duration = 0;
         
-        if (isBlank(durationInString)) {
-            durationInString = ZERO_MINUTE_STRING;
-        } else if(StringUtils.equals(durationInString, LIGHTNING_STRING)) {
-        	durationInString = LIGHTNING_DURATION_IN_MINUTES_STRING;
+        if (isNotBlank(durationInString)) {
+            duration = Integer.parseInt(durationInString);
+            
+        } else if(StringUtils.equals(match.group(properties.getEventLightningGroupIndex()), properties.getLightningString())) {
+        	duration = properties.getLightningDurationInMinutes();
         }
         
-        int duration = Integer.parseInt(durationInString);
-
-        Track track = Track.builder()
+        Event event = Event.builder()
         					.name(name)
         					.durationInMinutes(duration)
         					.build();
 
-        return track;
+        return event;
     }
 	
 	public List<String> readInput(String filename) {
