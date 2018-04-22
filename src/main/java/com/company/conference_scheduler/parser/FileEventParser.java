@@ -45,6 +45,7 @@ public class FileEventParser implements EventParser {
 			List<Error> errors = eventValidator.validate(event);
 			
 			if(CollectionUtils.isNotEmpty(errors)) {
+				log.error("Error in event data. Event: {}. Errors: {}", event, errors);
 				throw new RuntimeException();
 			}
 			
@@ -55,14 +56,16 @@ public class FileEventParser implements EventParser {
 	}
 	
     private Event parseLine(String line) {
+    	log.debug("Parsing line with pattern '{}' - '{}'", properties.getLinePattern(), line);
         if (isBlank(line)) {
             return null;
         }
 
-        Pattern p = Pattern.compile("^(.+)\\s(\\d+)?((min)|(lightning))$");
-        Matcher match = p.matcher(line);
+        Pattern pattern = Pattern.compile(properties.getLinePattern());
+        Matcher match = pattern.matcher(line);
+        
         if (match.find() == false) {
-            log.warn("Invalid input line: " + line);
+            log.warn("Invalid input line: {}", line);
             return null;
         }
 
@@ -72,7 +75,6 @@ public class FileEventParser implements EventParser {
         
         if (isNotBlank(durationInString)) {
             duration = Integer.parseInt(durationInString);
-            
         } else if(StringUtils.equals(match.group(properties.getEventLightningGroupIndex()), properties.getLightningString())) {
         	duration = properties.getLightningDurationInMinutes();
         }
@@ -81,7 +83,9 @@ public class FileEventParser implements EventParser {
         					.name(name)
         					.durationInMinutes(duration)
         					.build();
-
+        
+        log.debug("Created event {}", event);
+        
         return event;
     }
 	
@@ -90,22 +94,26 @@ public class FileEventParser implements EventParser {
 			log.error("Filename is blank");
 			throw new IllegalArgumentException("Filename is blank");
 		}
+		
+		log.info("Reading file {}", filename);
 
-		List<String> fileLineslist = new ArrayList<String>();
+		List<String> fileLines = new ArrayList<String>();
 		
 		try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
 			
 			String strLine = null;
 			while (isNotBlank(strLine = br.readLine())) {
-				fileLineslist.add(strLine);
+				fileLines.add(strLine);
 			}
 
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("Error reading line", e);
 			throw new RuntimeException(e);
 		}
 		
-		return fileLineslist;
+		log.info("Readed {} lines", CollectionUtils.size(fileLines));
+		
+		return fileLines;
 	}
 
 	

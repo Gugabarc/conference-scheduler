@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class Track {
 	private List<Slot> slots;
-
+	
 	public Track() {
 		slots = new ArrayList<Slot>();
 	}

@@ -1,5 +1,6 @@
 package com.company.conference_scheduler.model;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class Slot {
 	private List<Event> events;
 	private int remainingDurationInMinutes;
 	private int slotDurationInMinutes;
-	private int startTime;
+	private LocalTime startTime;
 	private String name;
 	private boolean hasEvents;
 	

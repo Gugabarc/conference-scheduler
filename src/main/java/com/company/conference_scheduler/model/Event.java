@@ -1,5 +1,7 @@
 package com.company.conference_scheduler.model;
 
+import java.time.LocalTime;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,9 +14,11 @@ public class Event {
 	private String name;
 	private int durationInMinutes;
 	private boolean scheduled;
+	private LocalTime startTime;
+	private LocalTime endtTime;
 	
 	@Override
 	public String toString() {
-		return name + " " + durationInMinutes;
+		return startTime + " - " + endtTime  + " " + name;
 	}
 }

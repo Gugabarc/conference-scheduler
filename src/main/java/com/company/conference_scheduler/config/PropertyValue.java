@@ -21,7 +21,7 @@ public class PropertyValue {
 	@Value("${lightning.duration.in.minutes:5}")
 	private int lightningDurationInMinutes;
 	
-	@Value("${line.pattern:'^(.+)\\\\s(\\\\d+)?\\\\s?((min)|(lightning))$'}")
+	@Value("${line.pattern:'^(.+)\\s(\\d+)?((min)|(lightning))$'}")
 	private String linePattern;
 	
 	private final String lightningString = "lightning";

@@ -30,6 +30,7 @@ public class EventValidator implements Validator<Event> {
 			
             return Arrays.asList(Error.builder()
 			            			.message("Event object is null")
+			            			.fieldName("event")
 			            			.build());
 		} 
 		
@@ -38,6 +39,7 @@ public class EventValidator implements Validator<Event> {
             
             errors.add(Error.builder()
             			.message("Exceeded maximum duration allowed of " + properties.getMaxTrackDurationInMinutes() + " minutes")
+            			.fieldName("duration")
             			.build());
         }
 		
@@ -46,6 +48,7 @@ public class EventValidator implements Validator<Event> {
 			
             errors.add(Error.builder()
             			.message("Event's name is blank")
+            			.fieldName("name")
             			.build());
 		}
 		
