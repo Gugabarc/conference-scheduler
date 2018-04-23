@@ -21,3 +21,4 @@
 .mvn
 .classpath
 .git
+.DS_Store
