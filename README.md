@@ -1,5 +1,7 @@
 # conference-scheduler
 
+Projeto realizado para processo seletivo em ABRIL/2018
+
 ## Problem Statement - Conference Track Management
 
 You are planning a big programming conference and have received many proposals which have passed the initial screen process but you're having trouble fitting them into the time constraints of the day -- there are so many possibilities! So you write a program to do it for you.
@@ -122,7 +124,7 @@ A estrutura do projeto também permite que sejam acrescentados novos formatos de
 
 Para definir a estrutura de tracks e slots, deve-se alterar o arquivo de properties. Atualmente os valores são:
 
-```property
+```
 tracks.name=Track 1,Track 2
 slots.name=,Lunch,
 slots.duration.in.minutes=180,60,240
@@ -153,7 +155,16 @@ Onde:
 - lightning.duration.in.minutes - Tempo de duração de uma lightning
 - line.pattern - Expressão regular utilizada para converter cada linha em uma palestra/evento
 
-## Melhoras
+O algoritmo de ordenação e alocação das palestras dentro da estrutura pré-definida é bastante simples, pois como dito anteriormente, dedicou-se maior tempo a estrutura do projeto, e não a implementação do algoritmo. Após conhecidas as palestras (chamadas de 'events'), estas são ordenadas pela sua duração, da maior para a menor, e alocadas de acordo com o tempo ainda disponível em cada período/slot.
+
+Entre as tecnologias e frameworks utilizados estão: Spring Boot para setup inicial do projeto, recursos do próprio Spring, Lombok e algumas bibliotecas utilitárias do projeto Apache Commons. Para testes foram utilizados JUnit, Mockito e Assertj.
+
+A inclusão de persistência ou transformação do projeto para uma API REST necessita da inclusão de algumas poucas dependências, uso das anotações do JPA, e criação dos endpoints.
+
+## Melhorias
 
 - Atualmente as tracks e os slots estão definidos e configurados no arquivo de properties, a ideia é colocá-los em arquivos de metadados, que serão lidos pela aplicação, assim separando das properties
-- Centralizar as mensagens de erros
+- Centralizar as mensagens de erros em um arquivo separado das propriedades do projeto, utilizando i18n
+- Acrescentar mais testes unitários
+- Criar os endpoints para que se torne uma API REST, talvez quebrando o projetos em módulos do maven, permitindo que o core da aplicação seja executado tanto em uma API REST e quanto em um executável standalone
+- Aprimorar o algoritmo de ordenamento/alocação das palestras
