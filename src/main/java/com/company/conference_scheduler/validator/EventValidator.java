@@ -1,14 +1,15 @@
 package com.company.conference_scheduler.validator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.company.conference_scheduler.config.PropertyValue;
+import com.company.conference_scheduler.common.ErrorMessage;
+import com.company.conference_scheduler.common.FieldName;
+import com.company.conference_scheduler.common.PropertyValue;
 import com.company.conference_scheduler.model.Error;
 import com.company.conference_scheduler.model.Event;
 
@@ -20,6 +21,12 @@ public class EventValidator implements Validator<Event> {
 	
 	@Autowired
 	private PropertyValue properties;
+	
+	@Autowired
+	private ErrorMessage errorMessage;
+	
+	@Autowired
+	private FieldName fieldName;
 
 	@Override
 	public List<Error> validate(Event event) {
@@ -27,28 +34,24 @@ public class EventValidator implements Validator<Event> {
 		
 		if(event == null) {
 			log.error("Event object is null");
-			
-            return Arrays.asList(Error.builder()
-			            			.message("Event object is null")
-			            			.fieldName("event")
-			            			.build());
+			throw new IllegalArgumentException("Event object is null");
 		} 
 		
 		if (event.getDuration().toMinutes() > properties.getMaxTrackDurationInMinutes()) {
             log.error("Duration of event '{}' is more than the maximum duration allowed for an track, that is {}.", event.getName(), properties.getMaxTrackDurationInMinutes());
             
             errors.add(Error.builder()
-            			.message("Exceeded maximum duration allowed of " + properties.getMaxTrackDurationInMinutes() + " minutes")
-            			.fieldName("duration")
+            			.message(errorMessage.getEventExceededMaxDuration())
+            			.fieldName(fieldName.getDurationFieldName())
             			.build());
         }
 		
 		if(StringUtils.isBlank(event.getName())) {
-			log.error("Event's name is blank");
+			log.error(errorMessage.getEventNameIsBlank());
 			
             errors.add(Error.builder()
-            			.message("Event's name is blank")
-            			.fieldName("name")
+            			.message(errorMessage.getEventNameIsBlank())
+            			.fieldName(fieldName.getNameFieldName())
             			.build());
 		}
 		

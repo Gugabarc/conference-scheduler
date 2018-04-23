@@ -10,5 +10,4 @@ public class Error {
 	private int code;
 	private String message;
 	private String fieldName;
-
 }

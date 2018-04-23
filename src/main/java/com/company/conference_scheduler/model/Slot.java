@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,10 +44,17 @@ public class Slot {
 	
 	@Override
 	public String toString() {
-		String print = startTime + " - " + name + "\n";
+		String print = "";
+		
+		if(StringUtils.isNotBlank(name)) {
+			print += "\n" + startTime 
+						+ (duration != null ? " - " + startTime.plusMinutes(duration.toMinutes()) : "")
+						+ " "
+						+ name;
+		}
 		
 		for (Event event : events) {
-			print = print + event + "\n";
+			print += "\n" + event;
 		}
 		
 		return print;

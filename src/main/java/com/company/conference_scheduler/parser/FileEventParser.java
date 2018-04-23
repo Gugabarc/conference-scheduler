@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.company.conference_scheduler.config.PropertyValue;
+import com.company.conference_scheduler.common.PropertyValue;
 import com.company.conference_scheduler.model.Error;
 import com.company.conference_scheduler.model.Event;
 import com.company.conference_scheduler.validator.EventValidator;
@@ -41,8 +41,9 @@ public class FileEventParser implements EventParser {
 	public List<Event> getEvents() {
 		List<String> fileLines = readInput(filename);
 		List<Event> events = new ArrayList<>();
+		
 		for (String line : fileLines) {
-			Event event = parseLine(line);
+			Event event = parseLineToEvent(line);
 			List<Error> errors = eventValidator.validate(event);
 			
 			if(CollectionUtils.isNotEmpty(errors)) {
@@ -56,9 +57,10 @@ public class FileEventParser implements EventParser {
 		return events;
 	}
 	
-    private Event parseLine(String line) {
+    protected Event parseLineToEvent(String line) {
     	log.debug("Parsing line with pattern '{}' - '{}'", properties.getLinePattern(), line);
-        if (isBlank(line)) {
+        
+    	if (isBlank(line)) {
             return null;
         }
 

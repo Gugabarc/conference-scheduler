@@ -4,12 +4,14 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
 public class Event {
 	private final long id;
 	private String name;
@@ -17,7 +19,6 @@ public class Event {
 	private boolean scheduled;
 	private LocalTime startTime;
 	private LocalTime endtTime;
-	private Duration d;
 	
 	@Override
 	public String toString() {

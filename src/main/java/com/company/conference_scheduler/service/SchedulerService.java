@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.company.conference_scheduler.config.PropertyValue;
+import com.company.conference_scheduler.common.PropertyValue;
 import com.company.conference_scheduler.model.Event;
 import com.company.conference_scheduler.model.Slot;
 import com.company.conference_scheduler.model.Track;
@@ -79,8 +79,9 @@ public class SchedulerService {
 		List<Track> tracks = new ArrayList<>();
 		
 		for(int t = 0; t < properties.getTracksNames().length; t++) {
-			Track track = new Track();
-			track.setName(properties.getTracksNames()[t]);
+			Track track = Track.builder()
+								.name(properties.getTracksNames()[t])
+								.build();
 			
 			List<Slot> slots = createSlots(track);
 			track.addSlots(slots);

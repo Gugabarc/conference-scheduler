@@ -1,12 +1,14 @@
-package com.company.conference_scheduler.config;
+package com.company.conference_scheduler.common;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Component
 @Getter
+@Setter
 public class PropertyValue {
 	
 	@Value("${max.track.duration.in.minutes:240}")
@@ -27,7 +29,7 @@ public class PropertyValue {
 	@Value("${tracks.name:['Track 1','Track 2']}")
 	private String[] tracksNames;
 	
-	@Value("${slots.name:[Morning,Lunch,Afternoon]}")
+	@Value("${slots.name:[null,Lunch,null]}")
 	private String[] slotsName;
 	
 	@Value("${slots.duration.in.minutes:[180,60,240]}")
