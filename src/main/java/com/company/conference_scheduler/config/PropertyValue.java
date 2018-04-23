@@ -44,4 +44,7 @@ public class PropertyValue {
 	
 	@Value("${final.slot.name:Networking}")
 	private String finalSlotName;
+	
+	@Value("${output.file.path:'./output/conference-tracks.txt'}")
+	private String outputFilePath;
 }

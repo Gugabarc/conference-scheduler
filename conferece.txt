@@ -1,7 +1,0 @@
-tracks.name=Track 1,Track2
-
-slots.names=Morning,Lunch,Afternoon,Networking
-slots.duration.in.minutes=180,60,240,-1
-slots.has.events=true,false,true,false
-slots.start.hour=9,12,13,-1
-slots.start.minute=0,0,0,0

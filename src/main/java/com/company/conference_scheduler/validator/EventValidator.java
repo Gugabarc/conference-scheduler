@@ -34,7 +34,7 @@ public class EventValidator implements Validator<Event> {
 			            			.build());
 		} 
 		
-		if (event.getDurationInMinutes() > properties.getMaxTrackDurationInMinutes()) {
+		if (event.getDuration().toMinutes() > properties.getMaxTrackDurationInMinutes()) {
             log.error("Duration of event '{}' is more than the maximum duration allowed for an track, that is {}.", event.getName(), properties.getMaxTrackDurationInMinutes());
             
             errors.add(Error.builder()

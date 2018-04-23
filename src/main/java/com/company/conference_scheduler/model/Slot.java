@@ -1,38 +1,43 @@
 package com.company.conference_scheduler.model;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class Slot {
-	private List<Event> events;
-	private int remainingDurationInMinutes;
-	private int slotDurationInMinutes;
+	private long remainingDurationInMinutes;
+	private Duration duration;
 	private LocalTime startTime;
 	private String name;
 	private boolean hasEvents;
+	
+	@Builder.Default
 	private boolean isLast = false;
 	
-	public Slot() {
-		events = new ArrayList<>();
-	}
-
-	public void addEvent(Event event) {
+	@Builder.Default
+	private List<Event> events = new ArrayList<>(); 
+	
+	public boolean addEvent(Event event) {
 		if (hasRoomFor(event)) {
 			events.add(event);
-			remainingDurationInMinutes = remainingDurationInMinutes - event.getDurationInMinutes();
+			remainingDurationInMinutes = remainingDurationInMinutes - event.getDuration().toMinutes();
+			
+			return true;
 		}
 		
-		//throw new IllegalStateException("Not enough room in this slot to fit the event: '" + event.getName() + "'");
+		return false;
 	}
 
 	public boolean hasRoomFor(Event event) {
-		return remainingDurationInMinutes >= event.getDurationInMinutes();
+		return event.isScheduled() == false && remainingDurationInMinutes >= event.getDuration().toMinutes();
 	}
 	
 	@Override

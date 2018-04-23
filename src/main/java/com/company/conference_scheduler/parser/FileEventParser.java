@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -81,7 +82,7 @@ public class FileEventParser implements EventParser {
         
         Event event = Event.builder()
         					.name(name)
-        					.durationInMinutes(duration)
+        					.duration(Duration.ofMinutes(duration))
         					.build();
         
         log.debug("Created event {}", event);

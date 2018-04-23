@@ -1,10 +1,11 @@
 package com.company.conference_scheduler.service;
 
+import static org.apache.commons.collections.CollectionUtils.size;
+
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.commons.collections.CollectionUtils.size;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,12 @@ public class SchedulerService {
 	
 	public List<Track> schedule() {
 		List<Event> events = eventParser.getEvents();
-		List<Track> tracks = createSlotsAndTracks();
+		List<Track> tracks = createTracks();
 		LocalTime lastSlotTime = null;
 		
 		log.info("Ordering and scheduling events. There are {} tracks and {} events", size(tracks), size(events));
 		
-		events.sort((Event e1, Event e2) -> e2.getDurationInMinutes() - e1.getDurationInMinutes());
+		events.sort((Event e1, Event e2) -> e2.getDuration().compareTo(e1.getDuration()));
 		
 		for (Track track : tracks) {
 			
@@ -49,13 +50,14 @@ public class SchedulerService {
 					LocalTime currentTime = slot.getStartTime();
 					
 					for (Event event : events) {
-						if(event.isScheduled() == false && slot.getRemainingDurationInMinutes() >= event.getDurationInMinutes()) {
-							event.setScheduled(true);
+						if(slot.hasRoomFor(event)) {
 							event.setStartTime(currentTime);
-							currentTime = currentTime.plusMinutes(event.getDurationInMinutes());
+							currentTime = currentTime.plusMinutes(event.getDuration().toMinutes());
 							event.setEndtTime(currentTime);
+							
 							slot.addEvent(event);
 							
+							event.setScheduled(true);
 							lastSlotTime = currentTime;
 						}
 					}
@@ -65,15 +67,14 @@ public class SchedulerService {
 					slot.setStartTime(lastSlotTime);
 				}
 			}
-			System.out.println(track);
 		}
 		
 		log.info("Events scheduled");
 		
 		return tracks;
 	}
-	
-	public List<Track> createSlotsAndTracks() {
+
+	public List<Track> createTracks() {
 		log.info("Creating tracks and slots");
 		List<Track> tracks = new ArrayList<>();
 		
@@ -81,21 +82,14 @@ public class SchedulerService {
 			Track track = new Track();
 			track.setName(properties.getTracksNames()[t]);
 			
-			for(int s = 0; s < properties.getSlotsName().length; s++) {
-				Slot slot = new Slot();
-				slot.setName(properties.getSlotsName()[s]);
-				slot.setSlotDurationInMinutes(properties.getSlotsDurationInMinutes()[s]);
-				slot.setRemainingDurationInMinutes(properties.getSlotsDurationInMinutes()[s]);
-				slot.setHasEvents(BooleanUtils.toBoolean(properties.getSlotsHasEvents()[s]));
-				slot.setStartTime(LocalTime.of(properties.getSlotsStartHour()[s],properties.getSlotsStartMinute()[s]));
-				
-				track.addSlot(slot);
-			}
+			List<Slot> slots = createSlots(track);
+			track.addSlots(slots);
 			
-			Slot slot = new Slot();
-			slot.setName(properties.getFinalSlotName());
-			slot.setHasEvents(false);
-			slot.setLast(true);
+			Slot slot = Slot.builder()
+							.name(properties.getFinalSlotName())
+							.hasEvents(false)
+							.isLast(true)
+							.build();
 			
 			track.addSlot(slot);
 			
@@ -105,6 +99,29 @@ public class SchedulerService {
 		log.info("Created {} tracks", size(tracks));
 		
 		return tracks;
+	}
+
+	private List<Slot> createSlots(Track track) {
+		List<Slot> slots = new ArrayList<>();
+		for(int s = 0; s < properties.getSlotsName().length; s++) {
+			Slot slot = createSlot(s);
+			
+			slots.add(slot);
+		}
+		
+		return slots;
+	}
+
+	private Slot createSlot(int arrayIndex) {
+		Slot slot = Slot.builder()
+						.name(properties.getSlotsName()[arrayIndex])
+						.duration(Duration.ofMinutes(properties.getSlotsDurationInMinutes()[arrayIndex]))
+						.remainingDurationInMinutes(properties.getSlotsDurationInMinutes()[arrayIndex])
+						.hasEvents(BooleanUtils.toBoolean(properties.getSlotsHasEvents()[arrayIndex]))
+						.startTime(LocalTime.of(properties.getSlotsStartHour()[arrayIndex],properties.getSlotsStartMinute()[arrayIndex]))
+						.build();
+		
+		return slot;
 	}
 	
 }

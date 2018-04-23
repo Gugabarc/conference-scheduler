@@ -16,6 +16,10 @@ public class Track {
 		slots = new ArrayList<Slot>();
 	}
 
+	public void addSlots(List<Slot> slot) {
+		slots.addAll(slot);
+	}
+	
 	public void addSlot(Slot slot) {
 		slots.add(slot);
 	}
