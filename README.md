@@ -122,7 +122,7 @@ A implementação poderia ser mais simples, sem o uso do Spring, mas aqui pensou
 
 A estrutura do projeto também permite que sejam acrescentados novos formatos de input dos dados, que podem ser alterados antes da execução, diretamente no arquivo de propriedades, alterando o valor da propriedade 'event.parser'. Atualmente o único formato suportado é o de arquivo de texto seguindo as regras definidas na descrição do problema (que é o valor atual da propriedade, 'fileEventParser'). Para acrescentar novos formatos basta implementar a interface EventParser, e alterar o valor da propriedade 'event.parser' para o nome do bean desejado.
 
-Para definir a estrutura de tracks e slots, deve-se alterar o arquivo de properties. Atualmente os valores são:
+Para definir a estrutura de tracks (trilhas) e slots (períodos de cada trilha, como manhã, almoço e tarde), deve-se alterar o arquivo de properties. Atualmente os valores são:
 
 ```
 tracks.name=Track 1,Track 2
@@ -135,7 +135,9 @@ slots.start.minute=0,0,0
 
 Estes valores seguem o solicitado na descrição do problema, onde temos duas trilhas (Track 1 e Track 2), cada uma divida em 3 períodos (chamados no projeto de slots), onde o primeiro e o último não possuem um nome definido, e o do meio é para o almoço (com o nome de 'lunch'). Os tempos dos três slots são 180, 60 e 240 minutos, respectivamente. Cada slot pode suportar palestras/eventos, e isto é configurado pela propriedade 'slots.has.events', onde os valores estão ordenados pela ordem dos slots, ou seja, no exemplo acima apenas lunch não terá palestras. Além disso é possível configurar as horas e minutos do início de cada slot, sempre respeitando a ordem.
 
-Com isto é possível customizar a estrutura da conferência sem a necessidade de alterar o código. A propriedade 'final.slot.name' define o nome do último slot de cada trilha (track), na descrição do problema chamado de Networking. Este slot não possui duração nem horário de início fixo, pois depende do horário de encerramento das palestras para começar.
+Com isto é possível customizar a estrutura da conferência sem a necessidade de alterar o código. 
+
+A propriedade 'final.slot.name' define o nome do último slot de cada trilha (track), na descrição do problema chamado de Networking. Este slot não possui duração nem horário de início fixo, pois depende do horário de encerramento das palestras para começar.
 
 Algumas outras propriedades são:
 
@@ -159,7 +161,7 @@ O algoritmo de ordenação e alocação das palestras dentro da estrutura pré-d
 
 Entre as tecnologias e frameworks utilizados estão: Spring Boot para setup inicial do projeto, recursos do próprio Spring, Lombok e algumas bibliotecas utilitárias do projeto Apache Commons. Para testes foram utilizados JUnit, Mockito e Assertj.
 
-A inclusão de persistência ou transformação do projeto para uma API REST necessita da inclusão de algumas poucas dependências, uso das anotações do JPA, e criação dos endpoints.
+A inclusão de persistência e/ou transformação do projeto para uma API REST necessita da inclusão de algumas poucas dependências, uso das anotações do JPA, e criação dos endpoints.
 
 ## Melhorias
 
